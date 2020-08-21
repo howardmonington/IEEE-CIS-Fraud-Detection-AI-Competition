@@ -15,3 +15,14 @@ transaction_cols = raw_train_transaction.columns
 # It looks like the raw_train_identity provides some identity information for some of the people making transactions
 # And the raw_train_transaction has the transaction information and it has the target column: isFraud
 # I'm going to start out by just using the raw_train_transaction
+
+null_sum = raw_train_transaction.isnull().sum()
+
+train_transaction = raw_train_transaction.drop(['addr1','addr2','dist1','dist2','P_emaildomain','R_emaildomain'], axis = 1)
+train_transaction = raw_train_transaction.loc[['isFraud','TransactionDT','TransactionAmt','ProductCD','card1','card3',
+                                            'card6','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11','C12','C13','C14',
+                                            'V95','V96','V97','V98','V99','V100','V101','V102','V103','V104','V105','V106',
+                                            'V107','V108','V109','V110','V111','V112','V113','V114','V115','V116','V117','V118',
+                                            'V119','V120','V121','V122','V123','V124','V125','V126','V127']]
+train_transaction_cols = train_transaction.columns
+train_transaction = raw_train_transaction.loc[['isFraud']]
