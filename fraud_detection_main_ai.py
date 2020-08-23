@@ -1,20 +1,20 @@
 import numpy as np
 import pandas as pd
 pd.set_option('max_columns', None)
+pd.set_option('max_rows', None)
 
 raw_train_identity= pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\train_identity.csv')
 raw_test_identity = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\test_identity.csv')
 raw_train_transaction = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\train_transaction.csv')
 raw_test_transaction = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\test_transaction.csv')
 
-raw_train_identity.dtypes
-raw_train_transaction.dtypes
+train = raw_train_transaction.merge(raw_train_identity, how='left', left_index=True, right_index=True)
+test = raw_test_transaction.merge(raw_test_identity, how='left', left_index=True, right_index=True)
 
-transaction_cols = raw_train_transaction.columns
+del raw_train_identity, raw_test_identity, raw_train_transaction, raw_test_transaction
 
-# It looks like the raw_train_identity provides some identity information for some of the people making transactions
-# And the raw_train_transaction has the transaction information and it has the target column: isFraud
-# I'm going to start out by just using the raw_train_transaction
+
+
 
 null_sum = raw_train_transaction.isnull().sum()
 
