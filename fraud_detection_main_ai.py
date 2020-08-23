@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 pd.set_option('max_columns', None)
 pd.set_option('max_rows', None)
+from sklearn import preprocessing
 
 raw_train_identity= pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\train_identity.csv')
 raw_test_identity = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\test_identity.csv')
@@ -13,16 +14,65 @@ test = raw_test_transaction.merge(raw_test_identity, how='left', left_index=True
 
 del raw_train_identity, raw_test_identity, raw_train_transaction, raw_test_transaction
 
+# set up target variable and remove from main dataframe
+y_train = train['isFraud']
+X_train = train.drop(labels = 'isFraud', axis=1)
+X_test = test.copy()
+
+del train, test
+
+# Fill in Nans
+X_train = X_train.fillna(-999)
+X_test = X_test.fillna(-999)
+
+# For some reason, all of the "id_##" in the X_test showed up as "id-##" which is different than the X_train
+# This for loop fixes that
+temp_str = ""
+for f in X_test.columns:
+    if "id-" in X_test[f].name:
+        temp_str = X_test[f].name
+        temp_str = temp_str.replace("id-","id_")
+        X_test = X_test.rename(columns = {f:temp_str})
+
+
+for f in X_train.columns:
+    if X_train[f].dtype == "object" or X_test[f].dtype == "object":
 
 
 
-null_sum = raw_train_transaction.isnull().sum()
+for f in X_train.columns:
+    if X_train[f].dtype == "object" or X_test[f].dtype == "object":
+        lbl = preprocessing.LabelEncoder()
+        lbl.fit(list(X_train[f].values) + list(X_test[f].values))
+        X_train = lbl.transform(list(X_train[f].values))
+        X_test = lbl.transform(list(X_test[f].values))
+        
+# Label Encoding
+for f in X_train.columns:
+    if X_train[f].dtype=='object' or X_test[f].dtype=='object': 
+        lbl = preprocessing.LabelEncoder()
+        lbl.fit(list(X_train[f].values) + list(X_test[f].values))
+        X_train[f] = lbl.transform(list(X_train[f].values))
+        X_test[f] = lbl.transform(list(X_test[f].values))
+        
+        
+cols_list = list()
+x=0
+for f in X_train.columns:
+    if X_train[f].dtype == 'object': #or X_test[f].dtype == 'object':
+        x=x+1
+        
+X_test['id_01'].dtype        
+if "id-" in X_test['id-01'].name:
+    x = 69
 
-train_transaction = raw_train_transaction.drop(['addr1','addr2','dist1','dist2','P_emaildomain','R_emaildomain'], axis = 1)
-train_transaction = raw_train_transaction.loc[['isFraud','TransactionDT','TransactionAmt','ProductCD','card1','card3',
-                                            'card6','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11','C12','C13','C14',
-                                            'V95','V96','V97','V98','V99','V100','V101','V102','V103','V104','V105','V106',
-                                            'V107','V108','V109','V110','V111','V112','V113','V114','V115','V116','V117','V118',
-                                            'V119','V120','V121','V122','V123','V124','V125','V126','V127']]
-train_transaction_cols = train_transaction.columns
-train_transaction = raw_train_transaction.loc[['isFraud']]
+X_test.rename(columns={'id-01':'id-02'})
+
+temp_name = X_test['id-01'].name
+temp_name = "id_01"
+X_test['id-01'].rename(temp_name, axis='columns')
+X_test['id_01'].name
+
+for f in X_test.columns:
+    if "id-" in X_test[f].name:
+        X_test[f].rename(X_test[f].name.replace("id-","id_"))
