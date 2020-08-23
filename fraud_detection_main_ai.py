@@ -35,44 +35,11 @@ for f in X_test.columns:
         X_test = X_test.rename(columns = {f:temp_str})
 
 
+# For loop to encode all columns with "object" datatype
 for f in X_train.columns:
     if X_train[f].dtype == "object" or X_test[f].dtype == "object":
-
-
-
-for f in X_train.columns:
-    if X_train[f].dtype == "object" or X_test[f].dtype == "object":
-        lbl = preprocessing.LabelEncoder()
-        lbl.fit(list(X_train[f].values) + list(X_test[f].values))
-        X_train = lbl.transform(list(X_train[f].values))
-        X_test = lbl.transform(list(X_test[f].values))
-        
-# Label Encoding
-for f in X_train.columns:
-    if X_train[f].dtype=='object' or X_test[f].dtype=='object': 
         lbl = preprocessing.LabelEncoder()
         lbl.fit(list(X_train[f].values) + list(X_test[f].values))
         X_train[f] = lbl.transform(list(X_train[f].values))
         X_test[f] = lbl.transform(list(X_test[f].values))
         
-        
-cols_list = list()
-x=0
-for f in X_train.columns:
-    if X_train[f].dtype == 'object': #or X_test[f].dtype == 'object':
-        x=x+1
-        
-X_test['id_01'].dtype        
-if "id-" in X_test['id-01'].name:
-    x = 69
-
-X_test.rename(columns={'id-01':'id-02'})
-
-temp_name = X_test['id-01'].name
-temp_name = "id_01"
-X_test['id-01'].rename(temp_name, axis='columns')
-X_test['id_01'].name
-
-for f in X_test.columns:
-    if "id-" in X_test[f].name:
-        X_test[f].rename(X_test[f].name.replace("id-","id_"))
