@@ -3,11 +3,13 @@ import pandas as pd
 pd.set_option('max_columns', None)
 pd.set_option('max_rows', None)
 from sklearn import preprocessing
+import xgboost as xgb
 
 raw_train_identity= pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\train_identity.csv')
 raw_test_identity = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\test_identity.csv')
 raw_train_transaction = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\train_transaction.csv')
 raw_test_transaction = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\test_transaction.csv')
+sample_submission = pd.read_csv(r'C:\Users\lukem\Desktop\Github AI Projects\Data for ai competitions\sample_submission.csv')
 
 train = raw_train_transaction.merge(raw_train_identity, how='left', left_index=True, right_index=True)
 test = raw_test_transaction.merge(raw_test_identity, how='left', left_index=True, right_index=True)
@@ -43,3 +45,22 @@ for f in X_train.columns:
         X_train[f] = lbl.transform(list(X_train[f].values))
         X_test[f] = lbl.transform(list(X_test[f].values))
         
+# Training
+# To activate GPU usage, simply use tree_method = 'gpu_hist'
+#took 13 min 47s
+clf = xgb.XGBClassifier(
+    n_estimators=500,
+    max_depth=9,
+    learning_rate=0.05,
+    subsample=0.9,
+    colsample_bytree=0.9,
+    missing=-999,
+    random_state=2019,
+    tree_method='gpu_hist'  # THE MAGICAL PARAMETER
+)
+%time clf.fit(X_train, y_train)
+
+sample_submission['isFraud'] = clf.predict_proba(X_test)[:,1]
+
+path = r'C:\Users\lukem\Desktop\Github AI Projects\Submissions\ '
+sample_submission.to_csv(path + 'IEEE_fraud_xgb_submission_v6.csv', index = False)
